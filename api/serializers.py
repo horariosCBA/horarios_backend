@@ -139,3 +139,10 @@ class HorarioSerializer(serializers.ModelSerializer):
             return representation
         else:
             return super().to_representation(instance)
+        
+
+# Serializador del modelo Mensaje
+class MensajeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Mensaje
+        fields = '__all__'

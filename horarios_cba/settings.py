@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-t#7v#9$o-yderj@pa&vdns0rs^k8@lf!yhwvzm_=2hhm-%7b_9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # Desactiva el modo debug para ir a producción
+DEBUG = True  # Desactiva el modo debug para ir a producción
 
 # Para permitir el acceso desde cualquier sitio por el momento dejarlo asi ya que esto no se hace en producción
 ALLOWED_HOSTS = ['*']
@@ -114,7 +114,7 @@ WSGI_APPLICATION = 'horarios_cba.wsgi.application'
 # Para configurar conexiones adicionales, se debe agregar un nuevo diccionario
 # a la lista "DATABASES".
 
-'''
+
 DATABASES = {
     # Configuración de la conexión por defecto
     'default': {
@@ -133,7 +133,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-'''
+
 
 
 # Configuración de la base de datos
@@ -142,6 +142,7 @@ DATABASES = {
 # La función "dj_database_url.parse" analiza la URL de la base de datos y devuelve
 # un diccionario con los parámetros necesarios para configurar la conexión.
 
+'''
 DATABASES = {
     # Configuración predeterminada
     'default': dj_database_url.parse(env('DATABASE_URL'))
@@ -149,6 +150,7 @@ DATABASES = {
     #                                   conn_max_age=600,   # Tiempo de vida de las conexiones
     #                                   conn_health_checks=True)  # Chequeo de conexiones
 }
+'''
 
 # Configuración de la conexión a la base de datos
 # - 'default': Configuración predeterminada

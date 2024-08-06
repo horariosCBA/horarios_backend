@@ -246,3 +246,12 @@ class Horario(models.Model):
         PlaneacionPedagogica, on_delete=models.CASCADE, null=False, blank=False)
     aula = models.ForeignKey(
         Aula, on_delete=models.CASCADE, null=False, blank=False)
+
+
+# Modelo Mensaje
+class Mensaje(models.Model):
+    id = models.AutoField(primary_key=True)
+    usuarioReceptor = models.IntegerField(null=False, blank=False)
+    usuarioEmisor = models.IntegerField(null=False, blank=False)
+    fecha = models.DateTimeField(null=False, blank=False)
+    comentario = models.TextField(null=False, blank=False)
