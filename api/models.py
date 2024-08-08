@@ -201,6 +201,7 @@ class Usuario(models.Model):
     foto = models.CharField(max_length=255, null=True, blank=True)
     titulacion = models.CharField(max_length=60, null=True, blank=True)
     estado = models.BooleanField(default=True, null=False, blank=False)
+    fechaRegistro = models.DateField(blank=True, null=True, auto_now_add=True)
 
 
 # Modelo planeacion pedagogica
@@ -255,3 +256,10 @@ class Mensaje(models.Model):
     usuarioEmisor = models.IntegerField(null=False, blank=False)
     fecha = models.DateTimeField(null=False, blank=False)
     comentario = models.TextField(null=False, blank=False)
+
+
+# Modelo Vocero
+class Vocero(models.Model):
+    id = models.AutoField(primary_key=True)
+    usuario = models.IntegerField(null=False, blank=False)
+    ficha = models.ForeignKey(Ficha, on_delete=models.CASCADE, null=False, blank=False)

@@ -18,6 +18,7 @@ router.register(r'planeacion_pedagogica',
 router.register(r'aulas', AulaViewSet, basename='aulas')
 router.register(r'horarios', HorarioViewSet, basename='horarios')
 router.register(r'mensajes', MensajeViewSet, basename='mensajes')
+router.register(r'voceros', VoceroViewSet, basename='voceros')
 
 # Definimos las URLs tanto de la API como del envío de correos
 urlpatterns = [

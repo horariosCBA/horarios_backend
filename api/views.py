@@ -76,6 +76,12 @@ class MensajeViewSet(viewsets.ModelViewSet):
     serializer_class = MensajeSerializer
 
 
+# Vista de vocero
+class VoceroViewSet(viewsets.ModelViewSet):
+    queryset = Vocero.objects.all()
+    serializer_class = VoceroSerializer
+
+
 # Vista para enviar correo electrónico a un destinatario con la finalidad de hacer autenticación de código y 
 # tengo planeado enviar un correo al administrador para que asigne los roles a los usuarios nuevos.
 @csrf_exempt  # Exenta esta vista de la verificación CSRF

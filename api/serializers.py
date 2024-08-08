@@ -146,3 +146,21 @@ class MensajeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mensaje
         fields = '__all__'
+
+
+# Serializador del modelo Vocero
+class VoceroSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vocero
+        fields = '__all__'
+
+    #Trae tanto la estructura y los valores de la tabla ficha
+    def to_representation(self, instance):
+        if 'request' in self.context:
+            # Agregar campos adicionales para la solicitud GET
+            representation = super().to_representation(instance)
+            representation['ficha'] = FichaSerializer(
+                instance.ficha, context=self.context).data
+            return representation
+        else:
+            return super().to_representation(instance)
