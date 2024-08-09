@@ -10,6 +10,8 @@ datos de manera sencilla y coherente con el ORM (Object-Relational Mapping) de D
 """
 
 # Modelo programa de formación
+
+
 class Programa(models.Model):
 
     # Listas Desplegables
@@ -246,7 +248,7 @@ class Horario(models.Model):
     planeacionPedagogica = models.ForeignKey(
         PlaneacionPedagogica, on_delete=models.CASCADE, null=False, blank=False)
     aula = models.ForeignKey(
-        Aula, on_delete=models.CASCADE, null=False, blank=False)
+        Aula, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 # Modelo Mensaje
@@ -254,7 +256,7 @@ class Mensaje(models.Model):
     id = models.AutoField(primary_key=True)
     usuarioReceptor = models.IntegerField(null=False, blank=False)
     usuarioEmisor = models.IntegerField(null=False, blank=False)
-    fecha = models.DateTimeField(null=False, blank=False)
+    fecha = models.DateTimeField(null=False, blank=False, auto_now_add=True)
     comentario = models.TextField(null=False, blank=False)
 
 
@@ -262,4 +264,5 @@ class Mensaje(models.Model):
 class Vocero(models.Model):
     id = models.AutoField(primary_key=True)
     usuario = models.IntegerField(null=False, blank=False)
-    ficha = models.ForeignKey(Ficha, on_delete=models.CASCADE, null=False, blank=False)
+    ficha = models.ForeignKey(
+        Ficha, on_delete=models.CASCADE, null=False, blank=False)
