@@ -3,6 +3,7 @@ from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Mensaje
 from asgiref.sync import sync_to_async
+from django.db.models import Q
 
 '''
 El archivo consumers.py en Django define los consumidores para manejar conexiones WebSocket, 
@@ -39,6 +40,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         action = data.get('action')
         usuario_emisor = data.get('usuarioEmisor')
         usuario_receptor = data.get('usuarioReceptor')
+        usuario_actual = data.get('usuarioActual')
 
         if not usuario_emisor or not usuario_receptor:
             await self.send(text_data=json.dumps({'error': 'usuarioEmisor y usuarioReceptor son requeridos'}))
@@ -47,9 +49,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if action == 'send_message':
             await self.send_message(data, usuario_emisor, usuario_receptor)
         elif action == 'load_conversation':
-            await self.load_conversation(usuario_emisor, usuario_receptor)
+            await self.load_conversation(usuario_emisor, usuario_receptor, usuario_actual)
         elif action == 'delete_conversation':
-            await self.delete_conversation(usuario_emisor, usuario_receptor)
+            await self.delete_conversation(usuario_emisor, usuario_receptor, usuario_actual)
         elif action == 'mark_as_read':
             await self.mark_as_read(usuario_emisor, usuario_receptor)
 
@@ -62,7 +64,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             usuarioEmisor=usuario_emisor,
             contenido=data['contenido'],
             tipo=data['tipo'],
-            imagen=data['imagen']
+            imagen=data['imagen'],
         )
 
         # Envía el mensaje a todos los usuarios conectados en la sala
@@ -78,17 +80,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'fechaEnviado': mensaje.fechaEnviado.isoformat(),
                     'tipo': mensaje.tipo,
                     'imagen': mensaje.imagen,
+                    'eliminarEmisor': mensaje.eliminarEmisor,
+                    'eliminarReceptor': mensaje.eliminarReceptor,
                 }
             }
         )
 
     # Función que se ejecuta cuando un usuario carga la conversación
-    async def load_conversation(self, usuario_emisor, usuario_receptor):
-        # Carga la conversación completa entre los dos usuarios
+    async def load_conversation(self, usuario_emisor, usuario_receptor, usuario_actual):
+        # Filtra los mensajes según el estado de eliminación para el usuario actual
         mensajes = await sync_to_async(list)(
             Mensaje.objects.filter(
                 usuarioEmisor__in=[usuario_emisor, usuario_receptor],
                 usuarioReceptor__in=[usuario_emisor, usuario_receptor]
+            ).exclude(
+                # Excluir mensajes eliminados por el usuario actual
+                Q(usuarioEmisor=usuario_actual, eliminarEmisor=True) |
+                Q(usuarioReceptor=usuario_actual, eliminarReceptor=True)
             ).order_by('fechaEnviado')
         )
 
@@ -104,6 +112,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'fechaLeido': msg.fechaLeido.isoformat() if msg.fechaLeido else None,
                 'tipo': msg.tipo,
                 'imagen': msg.imagen,
+                'eliminarEmisor': msg.eliminarEmisor,
+                'eliminarReceptor': msg.eliminarReceptor,
             }
             for msg in mensajes
         ]
@@ -112,15 +122,38 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({'action': 'load_conversation', 'messages': mensajes_json}))
 
     # Función que se ejecuta cuando un usuario elimina la conversación
-    async def delete_conversation(self, usuario_emisor, usuario_receptor):
-        # Elimina la conversación entre los dos usuarios
-        await sync_to_async(Mensaje.objects.filter(
-            usuarioEmisor__in=[usuario_emisor, usuario_receptor],
-            usuarioReceptor__in=[usuario_emisor, usuario_receptor]
-        ).delete)()
+    async def delete_conversation(self, usuario_emisor, usuario_receptor, usuario_actual):
+        if usuario_actual == usuario_emisor:
+            # Marca los mensajes como eliminados por el emisor
+            await sync_to_async(Mensaje.objects.filter(
+                usuarioEmisor=usuario_emisor,
+                usuarioReceptor=usuario_receptor
+            ).update)(eliminarEmisor=True)
+            await sync_to_async(Mensaje.objects.filter(
+                usuarioEmisor=usuario_receptor,
+                usuarioReceptor=usuario_emisor
+            ).update)(eliminarReceptor=True)
+        elif usuario_actual == usuario_receptor:
+            # Marca los mensajes como eliminados por el receptor
+            await sync_to_async(Mensaje.objects.filter(
+                usuarioEmisor=usuario_receptor,
+                usuarioReceptor=usuario_emisor
+            ).update)(eliminarReceptor=True)
+            await sync_to_async(Mensaje.objects.filter(
+                usuarioEmisor=usuario_emisor,
+                usuarioReceptor=usuario_receptor
+            ).update)(eliminarEmisor=True)
+        else:
+            # Maneja el caso donde el usuario que hace la petición no es ni el emisor ni el receptor
+            await self.send(text_data=json.dumps({'action': 'delete_conversation', 'status': 'error', 'message': 'Usuario no autorizado'}))
+            return
 
         # Notifica al usuario que la conversación se ha eliminado con éxito
         await self.send(text_data=json.dumps({'action': 'delete_conversation', 'status': 'success'}))
+
+        # Envía la acción para limpiar la conversación al usuario conectado
+        await self.send(text_data=json.dumps({'action': 'clear_conversation'}))
+
 
     # Función que se ejecuta cuando un usuario marca los mensajes como leídos
     async def mark_as_read(self, usuario_emisor, usuario_receptor):

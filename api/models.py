@@ -64,6 +64,7 @@ class Programa(models.Model):
         max_length=100, choices=Certificacion.choices, default=Certificacion.TECNICO, null=False, blank=False
     )
     descripcion = models.TextField(null=False, blank=False)
+    area = models.CharField(max_length=30, null=True, blank=True)
 
 
 # Modelo Competencia
@@ -112,6 +113,8 @@ class Planeacion(models.Model):
     duracionPresencial = models.IntegerField(null=True, blank=True)
     duracionVirtual = models.IntegerField(null=True, blank=True)
     duracionTotal = models.IntegerField(null=False, blank=False)
+    horasRecomendadas = models.IntegerField(default=2, null=False, blank=False)
+    diasRecomendados = models.IntegerField(default=1, null=False, blank=False)
     resultadoAprendizaje = models.ForeignKey(
         ResultadoAprendizaje, on_delete=models.CASCADE, null=False, blank=False
     )
@@ -164,6 +167,7 @@ class Ficha(models.Model):
     tipoOferta = models.CharField(
         max_length=100, choices=TipoOferta.choices, default=TipoOferta.OFERTA_ABIERTA, null=False, blank=False
     )
+    lugar = models.CharField(max_length=150, null=True, blank=True)
     modalidad = models.CharField(
         max_length=100, choices=ModalidadesSENA.choices, default=ModalidadesSENA.PRESENCIAL, null=False, blank=False
     )
@@ -234,6 +238,7 @@ class Usuario(models.Model):
     titulacion = models.CharField(max_length=60, null=True, blank=True)
     estado = models.BooleanField(default=True, null=False, blank=False)
     enLinea = models.BooleanField(default=False, null=False, blank=False)
+    area = models.CharField(max_length=30, null=True, blank=True)
     fechaRegistro = models.DateField(blank=True, null=True, auto_now_add=True)
 
 
@@ -294,6 +299,8 @@ class Mensaje(models.Model):
     imagen = models.BooleanField(default=False, null=False, blank=False)
     contenido = models.TextField(null=False, blank=False)
     tipo = models.CharField(max_length=20, null=True, blank=True)
+    eliminarEmisor = models.BooleanField(default=False, null=False, blank=False)
+    eliminarReceptor = models.BooleanField(default=False, null=False, blank=False)
 
 
 # Modelo InscripcionAprendiz
