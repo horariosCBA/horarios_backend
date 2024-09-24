@@ -119,6 +119,12 @@ class AsignacionAulaViewSet(viewsets.ModelViewSet):
     serializer_class = AsignacionAulaSerializer
 
 
+# Vista de LiderFicha
+class LiderFichaViewSet(viewsets.ModelViewSet):
+    queryset = LiderFicha.objects.all()
+    serializer_class = LiderFichaSerializer
+
+
 # Vista para enviar correo electrónico a un destinatario con la finalidad de hacer autenticación de código y 
 # tengo planeado enviar un correo al administrador para que asigne los roles a los usuarios nuevos.
 @csrf_exempt  # Exenta esta vista de la verificación CSRF

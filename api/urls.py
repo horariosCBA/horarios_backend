@@ -24,6 +24,7 @@ router.register(r'inscripcion_aprendiz', InscripcionAprendizViewSet, basename='i
 router.register(r'asignacion_coordinador', AsignacionCoordinadorViewSet, basename='asignacion_coordinador')
 router.register(r'asignacion_instructor', AsignacionInstructorViewSet, basename='asignacion_instructor')
 router.register(r'asignacion_aula', AsignacionAulaViewSet, basename='asignacion_aula')
+router.register(r'lider_ficha', LiderFichaViewSet, basename='lider_ficha')
 
 
 # Definimos las URLs tanto de la API como del envío de correos

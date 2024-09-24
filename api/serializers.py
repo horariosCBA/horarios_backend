@@ -244,6 +244,17 @@ class AsignacionInstructorSerializer(serializers.ModelSerializer):
         model = AsignacionInstructor
         fields = '__all__'
 
+    #Trae tanto la estructura y los valores de la tabla usuario
+    def to_representation(self, instance):
+        if 'request' in self.context:
+            # Agregar campos adicionales para la solicitud GET
+            representation = super().to_representation(instance)
+            representation['usuario'] = UsuarioSerializer(
+                instance.usuario, context=self.context).data
+            return representation
+        else:
+            return super().to_representation(instance)
+
 
 # Serializador del modelo AsignacionAula
 class AsignacionAulaSerializer(serializers.ModelSerializer):
@@ -258,6 +269,24 @@ class AsignacionAulaSerializer(serializers.ModelSerializer):
             representation = super().to_representation(instance)
             representation['aula'] = AulaSerializer(
                 instance.aula, context=self.context).data
+            return representation
+        else:
+            return super().to_representation(instance)
+        
+
+# Serializador del modelo LiderFicha
+class LiderFichaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LiderFicha
+        fields = '__all__'
+
+    #Trae tanto la estructura y los valores de la tabla ficha
+    def to_representation(self, instance):
+        if 'request' in self.context:
+            # Agregar campos adicionales para la solicitud GET
+            representation = super().to_representation(instance)
+            representation['ficha'] = FichaSerializer(
+                instance.ficha, context=self.context).data
             return representation
         else:
             return super().to_representation(instance)

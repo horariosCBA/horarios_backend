@@ -11,6 +11,8 @@ datos de manera sencilla y coherente con el ORM (Object-Relational Mapping) de D
 """
 
 # Modelo programa de formación
+
+
 class Programa(models.Model):
 
     # Listas Desplegables
@@ -110,6 +112,7 @@ class ResultadoAprendizaje(models.Model):
 # Modelo Planeacion
 class Planeacion(models.Model):
     id = models.AutoField(primary_key=True)
+    numero = models.IntegerField(default=0, null=False, blank=False)
     duracionPresencial = models.IntegerField(null=True, blank=True)
     duracionVirtual = models.IntegerField(null=True, blank=True)
     duracionTotal = models.IntegerField(null=False, blank=False)
@@ -167,10 +170,10 @@ class Ficha(models.Model):
     tipoOferta = models.CharField(
         max_length=100, choices=TipoOferta.choices, default=TipoOferta.OFERTA_ABIERTA, null=False, blank=False
     )
-    lugar = models.CharField(max_length=150, null=True, blank=True)
     modalidad = models.CharField(
         max_length=100, choices=ModalidadesSENA.choices, default=ModalidadesSENA.PRESENCIAL, null=False, blank=False
     )
+    lugar = models.CharField(max_length=150, null=True, blank=True)
     estado = models.BooleanField(default=True, null=False, blank=False)
     programa = models.ForeignKey(
         Programa, on_delete=models.CASCADE, null=False, blank=False)
@@ -219,13 +222,19 @@ class Usuario(models.Model):
         COORDINADOR = "Coordinador", ('Coordinador')
         ADMINISTRADOR = "Administrador", ('Administrador')
 
+    class TipoInstructor(models.TextChoices):
+
+        PLANTA = "Planta", ('Planta')
+        CONTRATISTA = "Contratista", ('Contratista')
+        
 
     id = models.AutoField(primary_key=True)
     nombres = models.CharField(max_length=50, null=False, blank=False)
     apellidos = models.CharField(max_length=50, null=False, blank=False)
     tipoDocumento = models.CharField(
         max_length=3, choices=TipoDocumento.choices, default=TipoDocumento.CEDULA, null=False, blank=False)
-    numeroDocumento = models.CharField(max_length=15, null=False, blank=False, unique=True)
+    numeroDocumento = models.CharField(
+        max_length=15, null=False, blank=False, unique=True)
     correoElectronico = models.EmailField(null=False, blank=False, unique=True)
     telefono = models.CharField(max_length=10, null=True, blank=True)
     telefonoCelular = models.CharField(max_length=15, null=False, blank=False)
@@ -238,6 +247,9 @@ class Usuario(models.Model):
     titulacion = models.CharField(max_length=60, null=True, blank=True)
     estado = models.BooleanField(default=True, null=False, blank=False)
     enLinea = models.BooleanField(default=False, null=False, blank=False)
+    tipoInstructor = models.CharField(
+        max_length=15, choices=TipoInstructor.choices, default=TipoInstructor.PLANTA, null=True, blank=True
+    )
     area = models.CharField(max_length=30, null=True, blank=True)
     fechaRegistro = models.DateField(blank=True, null=True, auto_now_add=True)
 
@@ -299,8 +311,10 @@ class Mensaje(models.Model):
     imagen = models.BooleanField(default=False, null=False, blank=False)
     contenido = models.TextField(null=False, blank=False)
     tipo = models.CharField(max_length=20, null=True, blank=True)
-    eliminarEmisor = models.BooleanField(default=False, null=False, blank=False)
-    eliminarReceptor = models.BooleanField(default=False, null=False, blank=False)
+    eliminarEmisor = models.BooleanField(
+        default=False, null=False, blank=False)
+    eliminarReceptor = models.BooleanField(
+        default=False, null=False, blank=False)
 
 
 # Modelo InscripcionAprendiz
@@ -315,20 +329,29 @@ class InscripcionAprendiz(models.Model):
 class AsignacionCoordinador(models.Model):
     id = models.AutoField(primary_key=True)
     usuario = models.IntegerField(null=False, blank=False)
-    Programa = models.ForeignKey(
+    programa = models.ForeignKey(
         Programa, on_delete=models.CASCADE, null=False, blank=False)
 
 
 # Modelo AsignacionInstructor
 class AsignacionInstructor(models.Model):
     id = models.AutoField(primary_key=True)
-    usuarioInstructor = models.IntegerField(null=False, blank=False)
-    usuarioCoordinador = models.IntegerField(null=False, blank=False)
+    programa = models.IntegerField(null=False, blank=False)
+    usuario = models.ForeignKey(
+        Usuario, on_delete=models.CASCADE, null=True, blank=True)
 
 
 # Modelo AsignacionAula
 class AsignacionAula(models.Model):
     id = models.AutoField(primary_key=True)
-    usuario = models.IntegerField(null=False, blank=False)
+    programa = models.IntegerField(null=False, blank=False)
     aula = models.ForeignKey(
         Aula, on_delete=models.CASCADE, null=False, blank=False)
+
+
+# Modelo LiderFicha 
+class LiderFicha(models.Model):
+    id = models.AutoField(primary_key=True)
+    usuario = models.IntegerField(null=False, blank=False)
+    ficha = models.ForeignKey(
+        Ficha, on_delete=models.CASCADE, null=False, blank=False)
