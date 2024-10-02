@@ -57,7 +57,7 @@ class Programa(models.Model):
     fechaInicio = models.DateField(null=False, blank=False)
     fechaFin = models.DateField(null=True, blank=True)
     duracionLectiva = models.IntegerField(null=False, blank=False)
-    duracionProductiva = models.IntegerField(null=False, blank=False)
+    duracionProductiva = models.IntegerField(null=True, blank=True)
     duracionTotal = models.IntegerField(null=False, blank=False)
     tipoPrograma = models.CharField(
         max_length=100, choices=TipoPrograma.choices, default=TipoPrograma.TECNICO, null=False, blank=False
@@ -193,13 +193,20 @@ class Trimestre(models.Model):
         T7 = "Trimestre 7", ("Trimestre 7")
         T8 = "Trimestre 8", ("Trimestre 8")
 
+    class Estado(models.TextChoices):
+        ACTIVO = "Activo", ("Activo")
+        PENDIENTE = "Pendiente", ("Pendiente")
+        FINALIZADO = "Finalizado", ("Finalizado")
+
     id = models.AutoField(primary_key=True)
     numero = models.CharField(
         max_length=15, choices=Numero.choices, default=Numero.T1, null=False, blank=False
     )
     fechaInicio = models.DateField(null=False, blank=False)
     fechaFin = models.DateField(null=False, blank=False)
-    estado = models.BooleanField(default=True, null=False, blank=False)
+    estado = models.CharField(
+        max_length=15, choices=Estado.choices, default=Estado.PENDIENTE, null=False, blank=False
+    )
     ficha = models.ForeignKey(
         Ficha, on_delete=models.CASCADE, null=False, blank=False)
 
