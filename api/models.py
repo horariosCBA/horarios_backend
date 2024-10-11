@@ -5,8 +5,8 @@ from django.utils import timezone
 
 """
 Un modelo en Django sirve para definir la estructura y el comportamiento de los datos en tu aplicación.
-Cada modelo representa una tabla en la base de datos, donde los atributos del modelo corresponden a las 
-columnas de la tabla. Los modelos permiten crear, leer, actualizar y eliminar registros en la base de 
+Cada modelo representa una tabla en la base de datos, donde los atributos del modelo corresponden a las
+columnas de la tabla. Los modelos permiten crear, leer, actualizar y eliminar registros en la base de
 datos de manera sencilla y coherente con el ORM (Object-Relational Mapping) de Django.
 """
 
@@ -50,6 +50,20 @@ class Programa(models.Model):
         EMPRENDIMIENTO = "Certificado de Emprendimiento", (
             "Certificado de Emprendimiento")
 
+    # Listas Desplegables
+    class TipoOferta(models.TextChoices):
+        OFERTA = "Oferta", ("Oferta")
+        CADENA_FORMACION = "Cadena de Formación", ("Cadena de Formación")
+
+    class ModalidadesSENA(models.TextChoices):
+        PRESENCIAL = "Presencial", "Presencial"
+        VIRTUAL = "Virtual", "Virtual"
+        A_DISTANCIA = "A Distancia", "A Distancia"
+        MIXTA = "Mixta (B-Learning)", "Mixta (B-Learning)"
+        CONTRATO_DE_APRENDIZAJE = "Contrato de Aprendizaje", "Contrato de Aprendizaje"
+        ARTICULACION_CON_LA_MEDIA = "Articulación con la Media", "Articulación con la Media"
+        ESCUELA_TALLER = "Escuela-Taller", "Escuela-Taller"
+
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100, null=False, blank=False)
     codigo = models.CharField(max_length=15, null=False, blank=False)
@@ -66,6 +80,12 @@ class Programa(models.Model):
         max_length=100, choices=Certificacion.choices, default=Certificacion.TECNICO, null=False, blank=False
     )
     descripcion = models.TextField(null=False, blank=False)
+    tipoOferta = models.CharField(
+        max_length=100, choices=TipoOferta.choices, default=TipoOferta.OFERTA, null=False, blank=False
+    )
+    modalidad = models.CharField(
+        max_length=100, choices=ModalidadesSENA.choices, default=ModalidadesSENA.PRESENCIAL, null=False, blank=False
+    )
     area = models.CharField(max_length=30, null=True, blank=True)
 
 
@@ -113,13 +133,16 @@ class ResultadoAprendizaje(models.Model):
 class Planeacion(models.Model):
     id = models.AutoField(primary_key=True)
     numero = models.IntegerField(default=0, null=False, blank=False)
-    duracionPresencial = models.IntegerField(null=True, blank=True)
-    duracionVirtual = models.IntegerField(null=True, blank=True)
+    trabajoDirecto = models.IntegerField(null=True, blank=True)
+    trabajoAutonomo = models.IntegerField(null=True, blank=True)
     duracionTotal = models.IntegerField(null=False, blank=False)
     horasRecomendadas = models.IntegerField(default=2, null=False, blank=False)
-    diasRecomendados = models.IntegerField(default=1, null=False, blank=False)
+    diasRecomendados = models.DecimalField(
+        max_digits=2, decimal_places=0, default=1, null=False, blank=False)
+    creditos = models.DecimalField(
+        max_digits=2, decimal_places=0, default=1, null=False, blank=False)
     resultadoAprendizaje = models.ForeignKey(
-        ResultadoAprendizaje, on_delete=models.CASCADE, null=False, blank=False
+        ResultadoAprendizaje, on_delete = models.CASCADE, null = False, blank = False
     )
 
 
@@ -128,7 +151,7 @@ class Tematica(models.Model):
     id = models.AutoField(primary_key=True)
     descripcion = models.TextField(null=False, blank=False)
     planeacion = models.ForeignKey(
-        Planeacion, on_delete=models.CASCADE, null=False, blank=False
+        Planeacion, on_delete = models.CASCADE, null = False, blank = False
     )
 
 
@@ -137,46 +160,22 @@ class Producto(models.Model):
     id = models.AutoField(primary_key=True)
     descripcion = models.TextField(null=False, blank=False)
     planeacion = models.ForeignKey(
-        Planeacion, on_delete=models.CASCADE, null=False, blank=False
+        Planeacion, on_delete = models.CASCADE, null = False, blank = False
     )
 
 
 # Modelo Ficha
 class Ficha(models.Model):
 
-    # Listas Desplegables
-    class TipoOferta(models.TextChoices):
-        OFERTA_ABIERTA = "Oferta Abierta", ("Oferta Abierta")
-        COLEGIO = "Colegio", ("Colegio")
-        EMPRESA = "Empresa", ("Empresa")
-        INSTITUCION = "Institución", ("Institución")
-        PROGRAMA_ESPECIAL = "Programa Especial", ("Programa Especial")
-        EDUCACION_CONTINUA = "Educación Continua", ("Educación Continua")
-
-    class ModalidadesSENA(models.TextChoices):
-        PRESENCIAL = "Presencial", "Presencial"
-        VIRTUAL = "Virtual", "Virtual"
-        A_DISTANCIA = "A Distancia", "A Distancia"
-        MIXTA = "Mixta (B-Learning)", "Mixta (B-Learning)"
-        CONTRATO_DE_APRENDIZAJE = "Contrato de Aprendizaje", "Contrato de Aprendizaje"
-        ARTICULACION_CON_LA_MEDIA = "Articulación con la Media", "Articulación con la Media"
-        ESCUELA_TALLER = "Escuela-Taller", "Escuela-Taller"
-
     id = models.AutoField(primary_key=True)
     codigo = models.CharField(max_length=15, null=False, blank=False)
     descripcion = models.TextField(null=True, blank=True)
     fechaInicio = models.DateField(null=False, blank=False)
     fechaFin = models.DateField(null=False, blank=False)
-    tipoOferta = models.CharField(
-        max_length=100, choices=TipoOferta.choices, default=TipoOferta.OFERTA_ABIERTA, null=False, blank=False
-    )
-    modalidad = models.CharField(
-        max_length=100, choices=ModalidadesSENA.choices, default=ModalidadesSENA.PRESENCIAL, null=False, blank=False
-    )
-    lugar = models.CharField(max_length=150, null=True, blank=True)
+    lugar = models.TextField(default="Sin Lugar",null=False, blank=False)
     estado = models.BooleanField(default=True, null=False, blank=False)
     programa = models.ForeignKey(
-        Programa, on_delete=models.CASCADE, null=False, blank=False)
+        Programa, on_delete = models.CASCADE, null = False, blank = False)
 
 
 # Modelo Trimestre
@@ -200,15 +199,15 @@ class Trimestre(models.Model):
 
     id = models.AutoField(primary_key=True)
     numero = models.CharField(
-        max_length=15, choices=Numero.choices, default=Numero.T1, null=False, blank=False
+        max_length = 15, choices = Numero.choices, default = Numero.T1, null = False, blank = False
     )
     fechaInicio = models.DateField(null=False, blank=False)
     fechaFin = models.DateField(null=False, blank=False)
     estado = models.CharField(
-        max_length=15, choices=Estado.choices, default=Estado.PENDIENTE, null=False, blank=False
+        max_length = 15, choices = Estado.choices, default = Estado.PENDIENTE, null = False, blank = False
     )
     ficha = models.ForeignKey(
-        Ficha, on_delete=models.CASCADE, null=False, blank=False)
+        Ficha, on_delete = models.CASCADE, null = False, blank = False)
 
 
 # Modelo Usuario
@@ -233,20 +232,19 @@ class Usuario(models.Model):
 
         PLANTA = "Planta", ('Planta')
         CONTRATISTA = "Contratista", ('Contratista')
-        
 
     id = models.AutoField(primary_key=True)
     nombres = models.CharField(max_length=50, null=False, blank=False)
     apellidos = models.CharField(max_length=50, null=False, blank=False)
     tipoDocumento = models.CharField(
-        max_length=3, choices=TipoDocumento.choices, default=TipoDocumento.CEDULA, null=False, blank=False)
+        max_length = 3, choices = TipoDocumento.choices, default = TipoDocumento.CEDULA, null = False, blank = False)
     numeroDocumento = models.CharField(
-        max_length=15, null=False, blank=False, unique=True)
+        max_length = 15, null = False, blank = False, unique = True)
     correoElectronico = models.EmailField(null=False, blank=False, unique=True)
     telefono = models.CharField(max_length=10, null=True, blank=True)
     telefonoCelular = models.CharField(max_length=15, null=False, blank=False)
     rol = models.CharField(
-        max_length=15, choices=Roles.choices, default=Roles.APRENDIZ, null=True, blank=True)
+        max_length = 15, choices = Roles.choices, default = Roles.APRENDIZ, null = True, blank = True)
     cargo = models.CharField(max_length=50, null=True, blank=True)
     especialidad = models.CharField(max_length=100, null=True, blank=True)
     foto = models.CharField(max_length=255, null=True, blank=True)
@@ -255,7 +253,7 @@ class Usuario(models.Model):
     estado = models.BooleanField(default=True, null=False, blank=False)
     enLinea = models.BooleanField(default=False, null=False, blank=False)
     tipoInstructor = models.CharField(
-        max_length=15, choices=TipoInstructor.choices, default=TipoInstructor.PLANTA, null=True, blank=True
+        max_length = 15, choices = TipoInstructor.choices, default = TipoInstructor.PLANTA, null = True, blank = True
     )
     area = models.CharField(max_length=30, null=True, blank=True)
     fechaRegistro = models.DateField(blank=True, null=True, auto_now_add=True)
@@ -266,11 +264,12 @@ class Programacion(models.Model):
     id = models.AutoField(primary_key=True)
     trimestre = models.IntegerField(null=False, blank=False)
     ficha = models.IntegerField(null=False, blank=False)
-    diasAsignados = models.IntegerField(null=False, blank=False)
+    diasAsignados = models.DecimalField(
+        max_digits = 2, decimal_places = 0, null = False, blank = False)
     usuario = models.ForeignKey(
-        Usuario, on_delete=models.CASCADE, null=False, blank=False)
+        Usuario, on_delete = models.CASCADE, null = False, blank = False)
     planeacion = models.ForeignKey(
-        Planeacion, on_delete=models.CASCADE, null=False, blank=False)
+        Planeacion, on_delete = models.CASCADE, null = False, blank = False)
 
 
 # Modelo Aula
@@ -297,14 +296,14 @@ class Horario(models.Model):
 
     id = models.AutoField(primary_key=True)
     dia = models.CharField(
-        max_length=15, choices=Dia.choices, default=Dia.LUNES, null=False, blank=False
+        max_length = 15, choices = Dia.choices, default = Dia.LUNES, null = False, blank = False
     )
     horaInicio = models.TimeField(null=False, blank=False)
     horaFin = models.TimeField(null=False, blank=False)
     programacion = models.ForeignKey(
-        Programacion, on_delete=models.CASCADE, null=True, blank=True)
+        Programacion, on_delete = models.CASCADE, null = True, blank = True)
     aula = models.ForeignKey(
-        Aula, on_delete=models.SET_NULL, null=True, blank=True)
+        Aula, on_delete = models.SET_NULL, null = True, blank = True)
 
 
 # Modelo Mensaje
@@ -313,15 +312,15 @@ class Mensaje(models.Model):
     usuarioReceptor = models.IntegerField(null=False, blank=False)
     usuarioEmisor = models.IntegerField(null=False, blank=False)
     fechaEnviado = models.DateTimeField(
-        null=False, blank=False, auto_now_add=True)
+        null = False, blank = False, auto_now_add = True)
     fechaLeido = models.DateTimeField(null=True, blank=True)
     imagen = models.BooleanField(default=False, null=False, blank=False)
     contenido = models.TextField(null=False, blank=False)
     tipo = models.CharField(max_length=20, null=True, blank=True)
     eliminarEmisor = models.BooleanField(
-        default=False, null=False, blank=False)
+        default = False, null = False, blank = False)
     eliminarReceptor = models.BooleanField(
-        default=False, null=False, blank=False)
+        default = False, null = False, blank = False)
 
 
 # Modelo InscripcionAprendiz
@@ -329,7 +328,7 @@ class InscripcionAprendiz(models.Model):
     id = models.AutoField(primary_key=True)
     usuario = models.IntegerField(null=False, blank=False)
     ficha = models.ForeignKey(
-        Ficha, on_delete=models.CASCADE, null=False, blank=False)
+        Ficha, on_delete = models.CASCADE, null = False, blank = False)
 
 
 # Modelo AsignacionCoordinador
@@ -337,7 +336,7 @@ class AsignacionCoordinador(models.Model):
     id = models.AutoField(primary_key=True)
     usuario = models.IntegerField(null=False, blank=False)
     programa = models.ForeignKey(
-        Programa, on_delete=models.CASCADE, null=False, blank=False)
+        Programa, on_delete = models.CASCADE, null = False, blank = False)
 
 
 # Modelo AsignacionInstructor
@@ -345,7 +344,7 @@ class AsignacionInstructor(models.Model):
     id = models.AutoField(primary_key=True)
     programa = models.IntegerField(null=False, blank=False)
     usuario = models.ForeignKey(
-        Usuario, on_delete=models.CASCADE, null=True, blank=True)
+        Usuario, on_delete = models.CASCADE, null = True, blank = True)
 
 
 # Modelo AsignacionAula
@@ -353,12 +352,12 @@ class AsignacionAula(models.Model):
     id = models.AutoField(primary_key=True)
     programa = models.IntegerField(null=False, blank=False)
     aula = models.ForeignKey(
-        Aula, on_delete=models.CASCADE, null=False, blank=False)
+        Aula, on_delete = models.CASCADE, null = False, blank = False)
 
 
-# Modelo LiderFicha 
+# Modelo LiderFicha
 class LiderFicha(models.Model):
     id = models.AutoField(primary_key=True)
     usuario = models.IntegerField(null=False, blank=False)
     ficha = models.ForeignKey(
-        Ficha, on_delete=models.CASCADE, null=False, blank=False)
+        Ficha, on_delete = models.CASCADE, null = False, blank = False)
