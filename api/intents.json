@@ -1,0 +1,84 @@
+{
+  "intents": [
+    {
+      "tag": "saludo",
+      "patterns": [
+        "Hola",
+        "Hey",
+        "¿Cómo estás?",
+        "¿Hay alguien ahí?",
+        "Hola",
+        "Buen día"
+      ],
+      "responses": [
+        "¡Hola! :-)",
+        "Hola, gracias por visitar",
+        "¡Hola! ¿En qué puedo ayudarte?",
+        "¡Hola! ¿Cómo puedo ayudarte?"
+      ]
+    },
+    {
+      "tag": "despedida",
+      "patterns": ["Adiós", "Hasta luego", "Hasta pronto"],
+      "responses": [
+        "Hasta luego, gracias por visitar",
+        "Que tengas un buen día",
+        "¡Adiós! Vuelve pronto."
+      ]
+    },
+    {
+      "tag": "gracias",
+      "patterns": ["Gracias", "Te lo agradezco", "Eso es útil", "¡Muchas gracias!"],
+      "responses": ["¡Feliz de ayudar!", "¡En cualquier momento!", "¡Un placer!"]
+    },
+    {
+      "tag": "artículos",
+      "patterns": [
+        "¿Qué artículos tienes?",
+        "¿Qué tipos de artículos hay?",
+        "¿Qué vendes?"
+      ],
+      "responses": [
+        "Vendemos café y té",
+        "Tenemos café y té"
+      ]
+    },
+    {
+      "tag": "pagos",
+      "patterns": [
+        "¿Aceptan tarjetas de crédito?",
+        "¿Aceptan Mastercard?",
+        "¿Puedo pagar con Paypal?",
+        "¿Solo aceptan efectivo?"
+      ],
+      "responses": [
+        "Aceptamos VISA, Mastercard y Paypal",
+        "Aceptamos la mayoría de las tarjetas de crédito y Paypal"
+      ]
+    },
+    {
+      "tag": "entrega",
+      "patterns": [
+        "¿Cuánto tiempo tarda la entrega?",
+        "¿Cuánto tiempo tarda el envío?",
+        "¿Cuándo recibo mi entrega?"
+      ],
+      "responses": [
+        "La entrega tarda de 2 a 4 días",
+        "El envío tarda de 2 a 4 días"
+      ]
+    },
+    {
+      "tag": "divertido",
+      "patterns": [
+        "¡Cuéntame un chiste!",
+        "¡Dime algo divertido!",
+        "¿Sabes un chiste?"
+      ],
+      "responses": [
+        "¿Por qué el hipster se quemó la boca? Porque tomó el café antes de que estuviera frío.",
+        "¿Qué le dijo el búfalo a su hijo cuando se fue a la universidad? ¡Bisonte!"
+      ]
+    }
+  ]
+}

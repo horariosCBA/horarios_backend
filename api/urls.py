@@ -31,6 +31,7 @@ router.register(r'lider_ficha', LiderFichaViewSet, basename='lider_ficha')
 urlpatterns = [
     path('', include(router.urls)),  # Incluye todas las rutas definidas en el router de la API
     path('send_code/', send_code, name='send_code'),  # Ruta para la vista de envío de correos electrónicos
+    path('chatbot_response/', chatbot_response, name='chatbot_response'),  # Ruta para la vista de chatbot
 ]
 
 urlpatterns += router.urls  # Añade las rutas del router al conjunto de URLs de la aplicación

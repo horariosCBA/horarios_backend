@@ -50,19 +50,7 @@ class Programa(models.Model):
         EMPRENDIMIENTO = "Certificado de Emprendimiento", (
             "Certificado de Emprendimiento")
 
-    # Listas Desplegables
-    class TipoOferta(models.TextChoices):
-        OFERTA = "Oferta", ("Oferta")
-        CADENA_FORMACION = "Cadena de Formación", ("Cadena de Formación")
 
-    class ModalidadesSENA(models.TextChoices):
-        PRESENCIAL = "Presencial", "Presencial"
-        VIRTUAL = "Virtual", "Virtual"
-        A_DISTANCIA = "A Distancia", "A Distancia"
-        MIXTA = "Mixta (B-Learning)", "Mixta (B-Learning)"
-        CONTRATO_DE_APRENDIZAJE = "Contrato de Aprendizaje", "Contrato de Aprendizaje"
-        ARTICULACION_CON_LA_MEDIA = "Articulación con la Media", "Articulación con la Media"
-        ESCUELA_TALLER = "Escuela-Taller", "Escuela-Taller"
 
     id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=100, null=False, blank=False)
@@ -80,12 +68,6 @@ class Programa(models.Model):
         max_length=100, choices=Certificacion.choices, default=Certificacion.TECNICO, null=False, blank=False
     )
     descripcion = models.TextField(null=False, blank=False)
-    tipoOferta = models.CharField(
-        max_length=100, choices=TipoOferta.choices, default=TipoOferta.OFERTA, null=False, blank=False
-    )
-    modalidad = models.CharField(
-        max_length=100, choices=ModalidadesSENA.choices, default=ModalidadesSENA.PRESENCIAL, null=False, blank=False
-    )
     area = models.CharField(max_length=30, null=True, blank=True)
 
 
@@ -167,12 +149,32 @@ class Producto(models.Model):
 # Modelo Ficha
 class Ficha(models.Model):
 
+        # Listas Desplegables
+    class TipoOferta(models.TextChoices):
+        OFERTA = "Oferta", ("Oferta")
+        CADENA_FORMACION = "Cadena de Formación", ("Cadena de Formación")
+
+    class ModalidadesSENA(models.TextChoices):
+        PRESENCIAL = "Presencial", "Presencial"
+        VIRTUAL = "Virtual", "Virtual"
+        A_DISTANCIA = "A Distancia", "A Distancia"
+        MIXTA = "Mixta (B-Learning)", "Mixta (B-Learning)"
+        CONTRATO_DE_APRENDIZAJE = "Contrato de Aprendizaje", "Contrato de Aprendizaje"
+        ARTICULACION_CON_LA_MEDIA = "Articulación con la Media", "Articulación con la Media"
+        ESCUELA_TALLER = "Escuela-Taller", "Escuela-Taller"
+
     id = models.AutoField(primary_key=True)
     codigo = models.CharField(max_length=15, null=False, blank=False)
     descripcion = models.TextField(null=True, blank=True)
     fechaInicio = models.DateField(null=False, blank=False)
     fechaFin = models.DateField(null=False, blank=False)
     lugar = models.TextField(default="Sin Lugar",null=False, blank=False)
+    tipoOferta = models.CharField(
+        max_length=100, choices=TipoOferta.choices, default=TipoOferta.OFERTA, null=False, blank=False
+    )
+    modalidad = models.CharField(
+        max_length=100, choices=ModalidadesSENA.choices, default=ModalidadesSENA.PRESENCIAL, null=False, blank=False
+    )
     estado = models.BooleanField(default=True, null=False, blank=False)
     programa = models.ForeignKey(
         Programa, on_delete = models.CASCADE, null = False, blank = False)
